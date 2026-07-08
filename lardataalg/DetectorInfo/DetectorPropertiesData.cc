@@ -13,9 +13,14 @@ detinfo::DetectorPropertiesData::DetectorPropertiesData(
   , fDriftDirection{move(drift_direction)}
 {}
 
-double detinfo::DetectorPropertiesData::Efield(unsigned int const planegap) const
+double detinfo::DetectorPropertiesData::PerPlaneEfield(unsigned int const planegap) const
 {
-  return fProperties.Efield(planegap);
+  return fProperties.PerPlaneEfield(planegap);
+}
+
+TVector3 detinfo::DetectorPropertiesData::Efield(TVector3 const& point) const
+{
+  return fProperties.Efield(point);
 }
 
 double detinfo::DetectorPropertiesData::DriftVelocity(double const efield,
@@ -26,7 +31,7 @@ double detinfo::DetectorPropertiesData::DriftVelocity(double const efield,
 
 double detinfo::DetectorPropertiesData::BirksCorrection(double const dQdX) const
 {
-  return fProperties.BirksCorrection(dQdX, Efield());
+  return fProperties.BirksCorrection(dQdX, PerPlaneEfield());
 }
 double detinfo::DetectorPropertiesData::BirksCorrection(double const dQdX,
                                                         double const EField) const
@@ -36,7 +41,7 @@ double detinfo::DetectorPropertiesData::BirksCorrection(double const dQdX,
 
 double detinfo::DetectorPropertiesData::ModBoxCorrection(double const dQdX) const
 {
-  return fProperties.ModBoxCorrection(dQdX, Efield());
+  return fProperties.ModBoxCorrection(dQdX, PerPlaneEfield());
 }
 double detinfo::DetectorPropertiesData::ModBoxCorrection(double const dQdX,
                                                          double const EField) const

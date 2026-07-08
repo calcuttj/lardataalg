@@ -19,15 +19,20 @@
 #include "lardataalg/DetectorInfo/DetectorClocks.h"
 #include "lardataalg/DetectorInfo/DetectorProperties.h"
 #include "lardataalg/DetectorInfo/DetectorPropertiesData.h"
+#include "lardataalg/DetectorInfo/IElectricFieldProvider.h"
 #include "lardataalg/DetectorInfo/LArProperties.h"
 
 // framework libraries
 #include "fhiclcpp/fwd.h"
 #include "fhiclcpp/types/Atom.h"
+#include "fhiclcpp/types/DelegatedParameter.h"
 #include "fhiclcpp/types/OptionalAtom.h"
 #include "fhiclcpp/types/Sequence.h"
 
+#include "TVector3.h"
+
 // C/C++ standard libraries
+#include <memory>
 #include <set>
 
 /// General LArSoft Utilities
@@ -48,6 +53,11 @@ namespace detinfo {
         Name("Efield"),
         Comment("electric field in front of each wire plane (the last one is "
                 "the big one!) [kV/cm]")};
+
+      fhicl::DelegatedParameter ElectricFieldProvider{
+        Name("ElectricFieldProvider"),
+        Comment("configuration for the position-aware electric field provider; "
+                "must contain a 'ProviderType' selector (e.g. \"Box\")")};
 
       fhicl::Atom<double> Electronlifetime{Name("Electronlifetime"),
                                            Comment("electron lifetime in liquid argon [us]")};
@@ -154,7 +164,9 @@ namespace detinfo {
 
     // Accessors.
 
-    double Efield(unsigned int planegap = 0) const override; ///< kV/cm
+    double PerPlaneEfield(unsigned int planegap = 0) const override; ///< kV/cm
+
+    TVector3 Efield(TVector3 const& point) const override; ///< kV/cm (field vector)
 
     double DriftVelocity(double efield = 0.,
                          double temperature = 0.) const override; ///< cm/us
@@ -252,6 +264,8 @@ namespace detinfo {
     geo::WireReadoutGeom const* fChannelMap;
 
     std::vector<double> fEfield;     ///< kV/cm (per inter-plane volume) !
+    std::unique_ptr<detinfo::IElectricFieldProvider>
+      fEField;                       ///< position-aware electric field provider
     double fElectronlifetime;        ///< microseconds
     double fTemperature;             ///< kelvin
     double fElectronsToADC;          ///< conversion factor for # of ionization electrons

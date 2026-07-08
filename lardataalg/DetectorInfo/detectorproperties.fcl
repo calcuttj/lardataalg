@@ -4,10 +4,19 @@ standard_detproperties :
 {
  service_provider: "DetectorPropertiesServiceStandard"
 
- # Drift properties 
+ # Drift properties
  Temperature:      91                #Kelvin
  Efield:           [0.5,0.66,0.8 ]   #kV/cm
  Electronlifetime: 750               #microseconds
+
+ # Position-aware electric field provider (mandatory). The Box provider
+ # returns FieldVector inside the axis-aligned box, {0,0,0} outside.
+ ElectricFieldProvider: {
+   ProviderType: "Box"
+   LowerCorner:  [ -1.0e9, -1.0e9, -1.0e9 ]   # cm
+   UpperCorner:  [  1.0e9,  1.0e9,  1.0e9 ]   # cm
+   FieldVector:  [ 0.5, 0.0, 0.0 ]            # kV/cm
+ }
  
  SternheimerA:     0.1956  # Ar Sternheimer parameter a.
  SternheimerK:     3.0000  # Ar Sternheimer parameter k.

@@ -118,7 +118,7 @@ int main(int argc, char const** argv)
   unsigned int const nWaveformTicks = detp.NumberTimeSamples();
   unsigned int const nReadoutWindowTicks = detp.ReadOutWindowSize();
 
-  mf::LogVerbatim("detp_test") << "Electric field in the active volume: " << detp.Efield()
+  mf::LogVerbatim("detp_test") << "Electric field in the active volume: " << detp.PerPlaneEfield()
                                << " kV/cm"
                                << "\nSampling rate:       " << TDCtick << " ns"
                                << "\nArgon temperature:   " << detp.Temperature() << " K"

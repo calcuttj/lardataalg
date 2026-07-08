@@ -3,6 +3,8 @@
 
 #include "larcoreobj/SimpleTypesAndConstants/geo_types.h"
 
+#include "TVector3.h"
+
 #include <vector>
 
 namespace detinfo {
@@ -15,7 +17,9 @@ namespace detinfo {
                                     std::vector<std::vector<std::vector<double>>>&& x_ticks_offsets,
                                     std::vector<std::vector<double>>&& drift_direction);
 
-    double Efield(unsigned int planegap = 0) const; ///< kV/cm
+    double PerPlaneEfield(unsigned int planegap = 0) const; ///< kV/cm
+
+    TVector3 Efield(TVector3 const& point) const; ///< kV/cm (field vector)
 
     double DriftVelocity(double efield = 0.,
                          double temperature = 0.) const; ///< cm/us

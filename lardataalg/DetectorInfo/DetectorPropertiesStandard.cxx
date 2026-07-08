@@ -8,6 +8,7 @@
 
 // LArSoft includes
 #include "lardataalg/DetectorInfo/DetectorPropertiesStandard.h"
+#include "lardataalg/DetectorInfo/ElectricFieldProviderFactory.h"
 #include "larcorealg/CoreUtils/ProviderUtil.h" // lar::IgnorableProviderConfigKeys()
 #include "larcorealg/Geometry/CryostatGeo.h"
 #include "larcorealg/Geometry/GeometryCore.h"
@@ -19,6 +20,7 @@
 #include "messagefacility/MessageLogger/MessageLogger.h"
 
 // Art includes
+#include "fhiclcpp/ParameterSet.h"
 #include "fhiclcpp/types/Table.h"
 
 // C/C++ libraries
@@ -81,6 +83,8 @@ namespace detinfo {
     fhicl::Table<Configuration_t> const config{p, ignorable_keys};
 
     fEfield = config().Efield();
+    fEField = detinfo::makeElectricFieldProvider(
+      config().ElectricFieldProvider.get<fhicl::ParameterSet>());
     fElectronlifetime = config().Electronlifetime();
     fTemperature = config().Temperature();
     fElectronsToADC = config().ElectronsToADC();
@@ -119,13 +123,19 @@ namespace detinfo {
   }
 
   //------------------------------------------------------------------------------------//
-  double DetectorPropertiesStandard::Efield(unsigned int const planegap) const
+  double DetectorPropertiesStandard::PerPlaneEfield(unsigned int const planegap) const
   {
     if (planegap >= fEfield.size())
       throw cet::exception("DetectorPropertiesStandard")
         << "requesting Electric field in a plane gap that is not defined\n";
 
     return fEfield[planegap];
+  }
+
+  //------------------------------------------------------------------------------------//
+  TVector3 DetectorPropertiesStandard::Efield(TVector3 const& point) const
+  {
+    return fEField->Efield(point);
   }
 
   //------------------------------------------------
@@ -222,7 +232,7 @@ namespace detinfo {
     // Temperature should have units of Kelvin
 
     // Default Efield, use internal value.
-    if (efield == 0.) efield = Efield();
+    if (efield == 0.) efield = PerPlaneEfield();
 
     if (efield > 4.0)
       mf::LogWarning("DetectorPropertiesStandard")
@@ -322,7 +332,7 @@ namespace detinfo {
   // returns dEdX in MeV/cm
   double DetectorPropertiesStandard::BirksCorrection(double dQdx) const
   {
-    return BirksCorrection(dQdx, Efield());
+    return BirksCorrection(dQdx, PerPlaneEfield());
   }
   double DetectorPropertiesStandard::BirksCorrection(double dQdx, double E_field) const
   {
@@ -343,7 +353,7 @@ namespace detinfo {
   // Modified Box model correction
   double DetectorPropertiesStandard::ModBoxCorrection(double dQdx) const
   {
-    return ModBoxCorrection(dQdx, Efield());
+    return ModBoxCorrection(dQdx, PerPlaneEfield());
   }
   double DetectorPropertiesStandard::ModBoxCorrection(double dQdx, double E_field) const
   {
@@ -372,7 +382,7 @@ namespace detinfo {
     detinfo::DetectorClocksData const& clock_data) const
   {
     double const samplingRate = sampling_rate(clock_data);
-    double const efield = Efield();
+    double const efield = PerPlaneEfield();
     double const temperature = Temperature();
     double const driftVelocity = DriftVelocity(efield, temperature);
     double const x_ticks_coefficient = 0.001 * driftVelocity * samplingRate;
@@ -416,7 +426,7 @@ namespace detinfo {
             double driftVelocitygap[3];
             double x_ticks_coefficient_gap[3];
             for (int igap = 0; igap < 3; ++igap) {
-              efieldgap[igap] = Efield(igap);
+              efieldgap[igap] = PerPlaneEfield(igap);
               driftVelocitygap[igap] = DriftVelocity(efieldgap[igap], temperature);
               x_ticks_coefficient_gap[igap] = 0.001 * driftVelocitygap[igap] * samplingRate;
             }

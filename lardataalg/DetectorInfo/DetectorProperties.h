@@ -11,6 +11,8 @@
 
 #include "lardataalg/DetectorInfo/DetectorPropertiesData.h"
 
+#include "TVector3.h"
+
 /// General LArSoft Utilities
 namespace detinfo {
 
@@ -43,7 +45,18 @@ namespace detinfo {
      *
      * Note that all TPCs are assumed to have the same electric field values.
      */
-    virtual double Efield(unsigned int planegap = 0) const = 0;
+    virtual double PerPlaneEfield(unsigned int planegap = 0) const = 0;
+
+    /**
+     * @brief Returns the electric field vector at a spatial point
+     * @param point position in the detector [cm] (ROOT TVector3)
+     * @return electric field vector at that point, in kV/cm
+     *
+     * The value is supplied by a pluggable IElectricFieldProvider, so
+     * different (possibly non-uniform) field models can be selected by
+     * configuration.
+     */
+    virtual TVector3 Efield(TVector3 const& point) const = 0;
 
     virtual double DriftVelocity(double efield = 0., double temperature = 0.) const = 0;
 
