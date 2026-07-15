@@ -49,8 +49,8 @@ namespace detinfo {
       using Name = fhicl::Name;
       using Comment = fhicl::Comment;
 
-      fhicl::Sequence<double> Efield{
-        Name("Efield"),
+      fhicl::Sequence<double> PerPlaneEfield{
+        Name("PerPlaneEfield"),
         Comment("electric field in front of each wire plane (the last one is "
                 "the big one!) [kV/cm]")};
 
@@ -263,7 +263,7 @@ namespace detinfo {
     geo::GeometryCore const* fGeo;
     geo::WireReadoutGeom const* fChannelMap;
 
-    std::vector<double> fEfield;     ///< kV/cm (per inter-plane volume) !
+    std::vector<double> fPerPlaneEfield;     ///< kV/cm (per inter-plane volume) !
     std::unique_ptr<detinfo::IElectricFieldProvider>
       fEField;                       ///< position-aware electric field provider
     double fElectronlifetime;        ///< microseconds

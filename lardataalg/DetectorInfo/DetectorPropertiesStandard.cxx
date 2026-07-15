@@ -82,7 +82,7 @@ namespace detinfo {
     // parses and validates the parameter set:
     fhicl::Table<Configuration_t> const config{p, ignorable_keys};
 
-    fEfield = config().Efield();
+    fPerPlaneEfield = config().PerPlaneEfield();
     fEField = detinfo::makeElectricFieldProvider(
       config().ElectricFieldProvider.get<fhicl::ParameterSet>());
     fElectronlifetime = config().Electronlifetime();
@@ -125,11 +125,11 @@ namespace detinfo {
   //------------------------------------------------------------------------------------//
   double DetectorPropertiesStandard::PerPlaneEfield(unsigned int const planegap) const
   {
-    if (planegap >= fEfield.size())
+    if (planegap >= fPerPlaneEfield.size())
       throw cet::exception("DetectorPropertiesStandard")
         << "requesting Electric field in a plane gap that is not defined\n";
 
-    return fEfield[planegap];
+    return fPerPlaneEfield[planegap];
   }
 
   //------------------------------------------------------------------------------------//
