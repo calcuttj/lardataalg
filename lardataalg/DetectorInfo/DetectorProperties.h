@@ -13,8 +13,6 @@
 
 #include "larcoreobj/SimpleTypesAndConstants/geo_vectors.h"
 
-#include "TVector3.h"
-
 /// General LArSoft Utilities
 namespace detinfo {
 
@@ -51,14 +49,14 @@ namespace detinfo {
 
     /**
      * @brief Returns the electric field vector at a spatial point
-     * @param point position in the detector [cm] (ROOT TVector3)
+     * @param point position in the detector [cm]
      * @return electric field vector at that point, in kV/cm
      *
      * The value is supplied by a pluggable IElectricFieldProvider, so
      * different (possibly non-uniform) field models can be selected by
      * configuration.
      */
-    virtual TVector3 Efield(TVector3 const& point) const = 0;
+    virtual geo::Vector_t Efield(geo::Point_t const& point) const = 0;
 
     /**
      * @brief Maps a true position to its distorted (reconstructed-space) position

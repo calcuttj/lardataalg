@@ -18,7 +18,7 @@ double detinfo::DetectorPropertiesData::PerPlaneEfield(unsigned int const planeg
   return fProperties.PerPlaneEfield(planegap);
 }
 
-TVector3 detinfo::DetectorPropertiesData::Efield(TVector3 const& point) const
+geo::Vector_t detinfo::DetectorPropertiesData::Efield(geo::Point_t const& point) const
 {
   return fProperties.Efield(point);
 }

@@ -28,25 +28,23 @@ namespace detinfo {
   }
 
   //--------------------------------------------------------------------
-  TVector3 uniformFallbackEField(geo::GeometryCore const& geom,
-                                 std::vector<geo::BoxBoundedGeo> const& activeVolumes,
-                                 double const mag,
-                                 TVector3 const& point)
+  geo::Vector_t uniformFallbackEField(geo::GeometryCore const& geom,
+                                      std::vector<geo::BoxBoundedGeo> const& activeVolumes,
+                                      double const mag,
+                                      geo::Point_t const& point)
   {
-    geo::Point_t const gp{point.X(), point.Y(), point.Z()};
-
     bool inActive = false;
     for (auto const& box : activeVolumes) {
-      if (box.ContainsPosition(gp)) {
+      if (box.ContainsPosition(point)) {
         inActive = true;
         break;
       }
     }
-    if (!inActive) return TVector3(0., 0., 0.);
+    if (!inActive) return geo::Vector_t(0., 0., 0.);
 
-    geo::TPCGeo const* tpc = geom.PositionToTPCptr(gp);
+    geo::TPCGeo const* tpc = geom.PositionToTPCptr(point);
     geo::Vector_t const dir = tpc ? tpc->DriftDir() : geo::Vector_t{1., 0., 0.};
-    return TVector3(mag * dir.X(), mag * dir.Y(), mag * dir.Z());
+    return geo::Vector_t(mag * dir.X(), mag * dir.Y(), mag * dir.Z());
   }
 
 } // namespace detinfo

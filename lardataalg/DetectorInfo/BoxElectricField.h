@@ -13,8 +13,6 @@
 #include "fhiclcpp/types/Atom.h"
 #include "fhiclcpp/types/Sequence.h"
 
-#include "TVector3.h"
-
 #include <array>
 #include <string>
 
@@ -45,12 +43,12 @@ namespace detinfo {
 
     /// Returns the field vector if point is inside the box (inclusive),
     /// else {0,0,0}.
-    TVector3 Efield(TVector3 const& point) const override;
+    geo::Vector_t Efield(geo::Point_t const& point) const override;
 
   private:
     std::array<double, 3> fMin;   ///< per-axis lower bound [cm]
     std::array<double, 3> fMax;   ///< per-axis upper bound [cm]
-    TVector3 fField;              ///< field vector inside the box [kV/cm]
+    geo::Vector_t fField;         ///< field vector inside the box [kV/cm]
 
   }; // class BoxElectricField
 } // namespace detinfo

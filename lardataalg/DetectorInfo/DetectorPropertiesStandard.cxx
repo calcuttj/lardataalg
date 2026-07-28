@@ -144,7 +144,7 @@ namespace detinfo {
   }
 
   //------------------------------------------------------------------------------------//
-  TVector3 DetectorPropertiesStandard::Efield(TVector3 const& point) const
+  geo::Vector_t DetectorPropertiesStandard::Efield(geo::Point_t const& point) const
   {
     if (fEField) return fEField->Efield(point);
 

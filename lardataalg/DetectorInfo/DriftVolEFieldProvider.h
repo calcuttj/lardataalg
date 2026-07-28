@@ -31,8 +31,6 @@
 #include "fhiclcpp/types/Atom.h"
 #include "fhiclcpp/types/Sequence.h"
 
-#include "TVector3.h"
-
 #include <string>
 #include <vector>
 
@@ -73,15 +71,15 @@ namespace detinfo {
     /// Returns the enclosing drift-volume field vector, or {0,0,0} outside
     /// the active volume. Throws if a point inside the active volume is not
     /// enclosed by any drift volume.
-    TVector3 Efield(TVector3 const& point) const override;
+    geo::Vector_t Efield(geo::Point_t const& point) const override;
 
   private:
     /// One drift volume: [lo, hi] along the world drift axis, with a
     /// precomputed field vector pointing from its cathode toward its anode.
     struct DriftVolume {
-      double lo;      ///< lower drift-axis bound [cm]
-      double hi;      ///< upper drift-axis bound [cm]
-      TVector3 field; ///< field vector inside this volume [kV/cm]
+      double lo;           ///< lower drift-axis bound [cm]
+      double hi;           ///< upper drift-axis bound [cm]
+      geo::Vector_t field; ///< field vector inside this volume [kV/cm]
     };
 
     unsigned int fDriftAxis;           ///< world index of the drift axis (0=x,1=y,2=z)

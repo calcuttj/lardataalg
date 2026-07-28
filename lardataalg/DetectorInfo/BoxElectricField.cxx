@@ -28,15 +28,15 @@ namespace detinfo {
       fMax[i] = std::max(lower[i], upper[i]);
     }
 
-    fField = TVector3(field[0], field[1], field[2]);
+    fField = geo::Vector_t(field[0], field[1], field[2]);
   }
 
   //--------------------------------------------------------------------
-  TVector3 BoxElectricField::Efield(TVector3 const& point) const
+  geo::Vector_t BoxElectricField::Efield(geo::Point_t const& point) const
   {
     double const coords[3] = {point.X(), point.Y(), point.Z()};
     for (std::size_t i = 0; i < 3; ++i) {
-      if (coords[i] < fMin[i] || coords[i] > fMax[i]) return TVector3(0., 0., 0.);
+      if (coords[i] < fMin[i] || coords[i] > fMax[i]) return geo::Vector_t(0., 0., 0.);
     }
     return fField;
   }

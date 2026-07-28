@@ -11,7 +11,7 @@
 #ifndef LARDATAALG_DETINFO_IELECTRICFIELDPROVIDER_H
 #define LARDATAALG_DETINFO_IELECTRICFIELDPROVIDER_H
 
-#include "TVector3.h"
+#include "larcoreobj/SimpleTypesAndConstants/geo_vectors.h"
 
 namespace detinfo {
 
@@ -24,7 +24,7 @@ namespace detinfo {
     virtual ~IElectricFieldProvider() = default;
 
     /// Returns the electric field vector at the given point, in kV/cm.
-    virtual TVector3 Efield(TVector3 const& point) const = 0;
+    virtual geo::Vector_t Efield(geo::Point_t const& point) const = 0;
 
   protected:
     IElectricFieldProvider() = default;

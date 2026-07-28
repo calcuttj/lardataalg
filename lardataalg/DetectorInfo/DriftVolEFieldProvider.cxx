@@ -90,21 +90,21 @@ namespace detinfo {
       double comp[3] = {0., 0., 0.};
       comp[fDriftAxis] = component;
 
-      fVolumes.push_back({lo.pos, hi.pos, TVector3(comp[0], comp[1], comp[2])});
+      fVolumes.push_back({lo.pos, hi.pos, geo::Vector_t(comp[0], comp[1], comp[2])});
     }
   }
 
   //--------------------------------------------------------------------
-  TVector3 DriftVolEFieldProvider::Efield(TVector3 const& point) const
+  geo::Vector_t DriftVolEFieldProvider::Efield(geo::Point_t const& point) const
   {
     double const w[3] = {point.X(), point.Y(), point.Z()};
 
     // Outside the transverse extents or beyond the outermost electrodes
     // along the drift axis -> outside the active volume -> no field.
-    if (w[fYAxis] < fYmin || w[fYAxis] > fYmax) return TVector3(0., 0., 0.);
-    if (w[fZAxis] < fZmin || w[fZAxis] > fZmax) return TVector3(0., 0., 0.);
+    if (w[fYAxis] < fYmin || w[fYAxis] > fYmax) return geo::Vector_t(0., 0., 0.);
+    if (w[fZAxis] < fZmin || w[fZAxis] > fZmax) return geo::Vector_t(0., 0., 0.);
     double const d = w[fDriftAxis];
-    if (d < fDriftMin || d > fDriftMax) return TVector3(0., 0., 0.);
+    if (d < fDriftMin || d > fDriftMax) return geo::Vector_t(0., 0., 0.);
 
     for (auto const& vol : fVolumes) {
       if (d >= vol.lo && d <= vol.hi) return vol.field;
@@ -116,7 +116,7 @@ namespace detinfo {
       << "Point at drift coordinate " << d
       << " is inside the active volume but not within any drift volume.\n";
 
-    return TVector3(0., 0., 0.); // unreachable; silences missing-return warnings
+    return geo::Vector_t(0., 0., 0.); // unreachable; silences missing-return warnings
   }
 
 } // namespace detinfo

@@ -30,8 +30,6 @@
 #include "fhiclcpp/types/OptionalAtom.h"
 #include "fhiclcpp/types/Sequence.h"
 
-#include "TVector3.h"
-
 // C/C++ standard libraries
 #include <memory>
 #include <set>
@@ -164,7 +162,7 @@ namespace detinfo {
 
     double PerPlaneEfield(unsigned int planegap = 0) const override; ///< kV/cm
 
-    TVector3 Efield(TVector3 const& point) const override; ///< kV/cm (field vector)
+    geo::Vector_t Efield(geo::Point_t const& point) const override; ///< kV/cm (field vector)
 
     geo::Point_t Distort(geo::Point_t const& point) const override; ///< distorted position [cm]
     geo::Point_t Correct(geo::Point_t const& point) const override; ///< corrected position [cm]
