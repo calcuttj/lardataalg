@@ -8,8 +8,11 @@
 
 // LArSoft includes
 #include "lardataalg/DetectorInfo/DetectorPropertiesStandard.h"
-#include "lardataalg/DetectorInfo/ElectricFieldProviderFactory.h"
+#include "lardataalg/DetectorInfo/EFieldFallback.h"
+#include "lardataalg/DetectorInfo/IElectricFieldProvider.h"
+#include "lardataalg/DetectorInfo/IPositionDistorter.h"
 #include "larcorealg/CoreUtils/ProviderUtil.h" // lar::IgnorableProviderConfigKeys()
+#include "larcorealg/Geometry/BoxBoundedGeo.h"
 #include "larcorealg/Geometry/CryostatGeo.h"
 #include "larcorealg/Geometry/GeometryCore.h"
 #include "larcorealg/Geometry/PlaneGeo.h"
@@ -58,10 +61,16 @@ namespace detinfo {
     geo::GeometryCore const* geo,
     geo::WireReadoutGeom const* wireReadoutGeom,
     detinfo::LArProperties const* lp,
-    std::set<std::string> const& ignore_params)
-    : fLP(lp), fGeo(geo), fChannelMap(wireReadoutGeom)
+    std::set<std::string> const& ignore_params,
+    detinfo::IElectricFieldProvider const* efield,
+    detinfo::IPositionDistorter const* distorter)
+    : fLP(lp), fGeo(geo), fChannelMap(wireReadoutGeom), fEField(efield), fDistorter(distorter)
   {
     ValidateAndConfigure(pset, ignore_params);
+
+    // The active LAr volume(s) are only needed for the uniform-field fallback
+    // used when no ElectricFieldProvider is injected.
+    if (!fEField) fActiveVolumes = detinfo::extractActiveVolumes(*fGeo);
   }
 
   //--------------------------------------------------------------------
@@ -83,8 +92,10 @@ namespace detinfo {
     fhicl::Table<Configuration_t> const config{p, ignorable_keys};
 
     fPerPlaneEfield = config().PerPlaneEfield();
-    fEField = detinfo::makeElectricFieldProvider(
-      config().ElectricFieldProvider.get<fhicl::ParameterSet>());
+    // fEField / fDistorter are injected via the constructor (from the
+    // ElectricFieldService / PositionDistorterService); both may be null, in
+    // which case Efield()/Distort()/Correct() use built-in fallbacks.
+
     fElectronlifetime = config().Electronlifetime();
     fTemperature = config().Temperature();
     fElectronsToADC = config().ElectronsToADC();
@@ -135,7 +146,25 @@ namespace detinfo {
   //------------------------------------------------------------------------------------//
   TVector3 DetectorPropertiesStandard::Efield(TVector3 const& point) const
   {
-    return fEField->Efield(point);
+    if (fEField) return fEField->Efield(point);
+
+    // Fallback (no ElectricFieldProvider injected): a uniform field of magnitude
+    // PerPlaneEfield(0) along the drift axis inside the active LAr volume, zero
+    // outside it.
+    double const mag = fPerPlaneEfield.empty() ? 0. : fPerPlaneEfield.front();
+    return detinfo::uniformFallbackEField(*fGeo, fActiveVolumes, mag, point);
+  }
+
+  //------------------------------------------------------------------------------------//
+  geo::Point_t DetectorPropertiesStandard::Distort(geo::Point_t const& point) const
+  {
+    return fDistorter ? fDistorter->Distort(point) : point;
+  }
+
+  //------------------------------------------------------------------------------------//
+  geo::Point_t DetectorPropertiesStandard::Correct(geo::Point_t const& point) const
+  {
+    return fDistorter ? fDistorter->Correct(point) : point;
   }
 
   //------------------------------------------------

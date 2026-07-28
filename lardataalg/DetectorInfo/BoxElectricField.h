@@ -30,8 +30,6 @@ namespace detinfo {
       using Name = fhicl::Name;
       using Comment = fhicl::Comment;
 
-      fhicl::Atom<std::string> ProviderType{Name("ProviderType"),
-                                            Comment("electric field provider selector")};
       fhicl::Sequence<double, 3> LowerCorner{
         Name("LowerCorner"),
         Comment("one corner of the axis-aligned box [cm]: {x, y, z}")};

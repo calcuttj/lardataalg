@@ -4,6 +4,8 @@
 
 #include "lardataalg/DetectorInfo/BoxElectricField.h"
 
+#include "larcorealg/CoreUtils/ProviderUtil.h" // lar::IgnorableProviderConfigKeys()
+
 #include "fhiclcpp/ParameterSet.h"
 #include "fhiclcpp/types/Table.h"
 
@@ -14,7 +16,7 @@ namespace detinfo {
   //--------------------------------------------------------------------
   BoxElectricField::BoxElectricField(fhicl::ParameterSet const& pset)
   {
-    fhicl::Table<Config> const config{pset};
+    fhicl::Table<Config> const config{pset, lar::IgnorableProviderConfigKeys()};
 
     auto const lower = config().LowerCorner();
     auto const upper = config().UpperCorner();

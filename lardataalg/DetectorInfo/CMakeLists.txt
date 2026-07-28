@@ -5,8 +5,9 @@ cet_make_library(SOURCE
   DetectorPropertiesStandard.cxx
   DriftVolEFieldProvider.cxx
   ElecClock.cxx
-  ElectricFieldProviderFactory.cxx
+  EFieldFallback.cxx
   LArPropertiesStandard.cxx
+  NullPositionDistorter.cxx
   RunHistoryStandard.cxx
   LIBRARIES
   PUBLIC
@@ -19,6 +20,7 @@ cet_make_library(SOURCE
   fhiclcpp::fhiclcpp
   cetlib_except::cetlib_except
   ROOT::Physics
+  ROOT::GenVector
   PRIVATE
   cetlib::cetlib
   range-v3::range-v3

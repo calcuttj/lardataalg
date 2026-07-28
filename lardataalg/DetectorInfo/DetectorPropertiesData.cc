@@ -23,6 +23,16 @@ TVector3 detinfo::DetectorPropertiesData::Efield(TVector3 const& point) const
   return fProperties.Efield(point);
 }
 
+geo::Point_t detinfo::DetectorPropertiesData::Distort(geo::Point_t const& point) const
+{
+  return fProperties.Distort(point);
+}
+
+geo::Point_t detinfo::DetectorPropertiesData::Correct(geo::Point_t const& point) const
+{
+  return fProperties.Correct(point);
+}
+
 double detinfo::DetectorPropertiesData::DriftVelocity(double const efield,
                                                       double const temperature) const
 {

@@ -4,6 +4,8 @@
 
 #include "lardataalg/DetectorInfo/DriftVolEFieldProvider.h"
 
+#include "larcorealg/CoreUtils/ProviderUtil.h" // lar::IgnorableProviderConfigKeys()
+
 #include "cetlib_except/exception.h"
 #include "fhiclcpp/ParameterSet.h"
 #include "fhiclcpp/types/Table.h"
@@ -24,7 +26,7 @@ namespace detinfo {
   //--------------------------------------------------------------------
   DriftVolEFieldProvider::DriftVolEFieldProvider(fhicl::ParameterSet const& pset)
   {
-    fhicl::Table<Config> const config{pset};
+    fhicl::Table<Config> const config{pset, lar::IgnorableProviderConfigKeys()};
 
     // Cyclic permutation mapping canonical (drift, Y, Z) onto world axes.
     std::string const axis = config().DriftAxis();

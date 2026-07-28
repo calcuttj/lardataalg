@@ -6,18 +6,15 @@ standard_detproperties :
 
  # Drift properties
  Temperature:      91                #Kelvin
- Efield:           [0.5,0.66,0.8 ]   #kV/cm
+ PerPlaneEfield:           [0.5,0.66,0.8 ]   #kV/cm
  Electronlifetime: 750               #microseconds
 
- # Position-aware electric field provider (mandatory). The Box provider
- # returns FieldVector inside the axis-aligned box, {0,0,0} outside.
- ElectricFieldProvider: {
-   ProviderType: "Box"
-   LowerCorner:  [ -1.0e9, -1.0e9, -1.0e9 ]   # cm
-   UpperCorner:  [  1.0e9,  1.0e9,  1.0e9 ]   # cm
-   FieldVector:  [ 0.5, 0.0, 0.0 ]            # kV/cm
- }
- 
+ # Position-aware electric field and position distortion are now supplied by
+ # optional art services (ElectricFieldService / PositionDistorterService) in
+ # the `services` block. When unconfigured, Efield(point) falls back to the
+ # uniform PerPlaneEfield inside the active volume and Distort/Correct are the
+ # identity.
+
  SternheimerA:     0.1956  # Ar Sternheimer parameter a.
  SternheimerK:     3.0000  # Ar Sternheimer parameter k.
  SternheimerX0:    0.2000  # Ar Sternheimer parameter x0.

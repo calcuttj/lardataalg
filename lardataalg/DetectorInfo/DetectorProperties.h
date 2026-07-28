@@ -11,6 +11,8 @@
 
 #include "lardataalg/DetectorInfo/DetectorPropertiesData.h"
 
+#include "larcoreobj/SimpleTypesAndConstants/geo_vectors.h"
+
 #include "TVector3.h"
 
 /// General LArSoft Utilities
@@ -57,6 +59,25 @@ namespace detinfo {
      * configuration.
      */
     virtual TVector3 Efield(TVector3 const& point) const = 0;
+
+    /**
+     * @brief Maps a true position to its distorted (reconstructed-space) position
+     * @param point true position in the detector [cm]
+     * @return the distorted position [cm]
+     *
+     * The transform is supplied by a pluggable IPositionDistorter, so different
+     * (space-charge-style) distortion models can be selected by configuration.
+     */
+    virtual geo::Point_t Distort(geo::Point_t const& point) const = 0;
+
+    /**
+     * @brief Maps a distorted position back to its corrected (true-space) position
+     * @param point distorted position in the detector [cm]
+     * @return the corrected position [cm]
+     *
+     * The inverse of Distort(), supplied by the same pluggable IPositionDistorter.
+     */
+    virtual geo::Point_t Correct(geo::Point_t const& point) const = 0;
 
     virtual double DriftVelocity(double efield = 0., double temperature = 0.) const = 0;
 

@@ -13,6 +13,7 @@
 
 // LArSoft libraries
 #include "larcorealg/CoreUtils/ProviderPack.h"
+#include "larcorealg/Geometry/BoxBoundedGeo.h"
 #include "larcorealg/Geometry/GeometryCore.h"
 #include "larcorealg/Geometry/WireReadoutGeom.h"
 #include "larcoreobj/SimpleTypesAndConstants/PhysicalConstants.h"
@@ -20,12 +21,12 @@
 #include "lardataalg/DetectorInfo/DetectorProperties.h"
 #include "lardataalg/DetectorInfo/DetectorPropertiesData.h"
 #include "lardataalg/DetectorInfo/IElectricFieldProvider.h"
+#include "lardataalg/DetectorInfo/IPositionDistorter.h"
 #include "lardataalg/DetectorInfo/LArProperties.h"
 
 // framework libraries
 #include "fhiclcpp/fwd.h"
 #include "fhiclcpp/types/Atom.h"
-#include "fhiclcpp/types/DelegatedParameter.h"
 #include "fhiclcpp/types/OptionalAtom.h"
 #include "fhiclcpp/types/Sequence.h"
 
@@ -53,11 +54,6 @@ namespace detinfo {
         Name("PerPlaneEfield"),
         Comment("electric field in front of each wire plane (the last one is "
                 "the big one!) [kV/cm]")};
-
-      fhicl::DelegatedParameter ElectricFieldProvider{
-        Name("ElectricFieldProvider"),
-        Comment("configuration for the position-aware electric field provider; "
-                "must contain a 'ProviderType' selector (e.g. \"Box\")")};
 
       fhicl::Atom<double> Electronlifetime{Name("Electronlifetime"),
                                            Comment("electron lifetime in liquid argon [us]")};
@@ -155,7 +151,9 @@ namespace detinfo {
                                geo::GeometryCore const* geo,
                                geo::WireReadoutGeom const* wireReadoutGeom,
                                detinfo::LArProperties const* lp,
-                               std::set<std::string> const& ignore_params = {});
+                               std::set<std::string> const& ignore_params = {},
+                               detinfo::IElectricFieldProvider const* efield = nullptr,
+                               detinfo::IPositionDistorter const* distorter = nullptr);
 
     DetectorPropertiesStandard(DetectorPropertiesStandard const&) = delete;
     virtual ~DetectorPropertiesStandard() = default;
@@ -167,6 +165,9 @@ namespace detinfo {
     double PerPlaneEfield(unsigned int planegap = 0) const override; ///< kV/cm
 
     TVector3 Efield(TVector3 const& point) const override; ///< kV/cm (field vector)
+
+    geo::Point_t Distort(geo::Point_t const& point) const override; ///< distorted position [cm]
+    geo::Point_t Correct(geo::Point_t const& point) const override; ///< corrected position [cm]
 
     double DriftVelocity(double efield = 0.,
                          double temperature = 0.) const override; ///< cm/us
@@ -264,8 +265,12 @@ namespace detinfo {
     geo::WireReadoutGeom const* fChannelMap;
 
     std::vector<double> fPerPlaneEfield;     ///< kV/cm (per inter-plane volume) !
-    std::unique_ptr<detinfo::IElectricFieldProvider>
-      fEField;                       ///< position-aware electric field provider
+    detinfo::IElectricFieldProvider const*
+      fEField = nullptr;             ///< injected position-aware E-field provider (may be null)
+    detinfo::IPositionDistorter const*
+      fDistorter = nullptr;          ///< injected position distorter (may be null)
+    std::vector<geo::BoxBoundedGeo>
+      fActiveVolumes;                ///< active LAr volume per cryostat (E-field fallback)
     double fElectronlifetime;        ///< microseconds
     double fTemperature;             ///< kelvin
     double fElectronsToADC;          ///< conversion factor for # of ionization electrons

@@ -48,8 +48,6 @@ namespace detinfo {
       using Name = fhicl::Name;
       using Comment = fhicl::Comment;
 
-      fhicl::Atom<std::string> ProviderType{Name("ProviderType"),
-                                            Comment("electric field provider selector")};
       fhicl::Atom<std::string> DriftAxis{
         Name("DriftAxis"),
         Comment("world drift axis / canonical-frame permutation: \"x\", \"y\", or \"z\"")};
