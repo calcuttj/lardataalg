@@ -8,6 +8,12 @@
 // header/namespace, mapping a spatial point to its distorted (Distort) or
 // corrected (Correct) position.
 //
+// This is the *consumer-facing* interface held by DetectorProperties: it is
+// total (always returns a point). Applicability ("does a distortion apply
+// here?") is not part of this interface; a chain-of-responsibility provider
+// (ChainedDistortion) resolves per-point routing internally over a set of
+// detinfo::IDistortion links and presents a single total transform here.
+//
 ////////////////////////////////////////////////////////////////////////
 #ifndef LARDATAALG_DETINFO_IPOSITIONDISTORTER_H
 #define LARDATAALG_DETINFO_IPOSITIONDISTORTER_H

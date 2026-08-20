@@ -7,7 +7,7 @@ cet_make_library(SOURCE
   ElecClock.cxx
   EFieldFallback.cxx
   LArPropertiesStandard.cxx
-  NullPositionDistorter.cxx
+  NullDistortion.cxx
   RunHistoryStandard.cxx
   LIBRARIES
   PUBLIC
