@@ -39,10 +39,6 @@ namespace detinfo {
     /// Returns the point unchanged.
     geo::Point_t Correct(geo::Point_t const& point) const override { return point; }
 
-    /// Applies everywhere (catch-all).
-    bool PointValidForDistort(geo::Point_t const&) const override { return true; }
-    bool PointValidForCorrect(geo::Point_t const&) const override { return true; }
-
   }; // class NullDistortion
 } // namespace detinfo
 

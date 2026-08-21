@@ -21,6 +21,8 @@
 
 #include "larcoreobj/SimpleTypesAndConstants/geo_vectors.h"
 
+#include <memory>
+
 namespace detinfo {
 
   class IDistortion {
@@ -37,15 +39,34 @@ namespace detinfo {
     /// Maps a distorted position back to its corrected (true-space) position.
     virtual geo::Point_t Correct(geo::Point_t const& point) const = 0;
 
-    /// True if this link applies the forward distortion at true-space \p point.
-    virtual bool PointValidForDistort(geo::Point_t const& point) const = 0;
-
-    /// True if this link applies the inverse at distorted-space \p point.
-    virtual bool PointValidForCorrect(geo::Point_t const& point) const = 0;
-
+    /// Set next link
+    void SetNextDistortion(IDistortion* next) {
+      m_next_distortion = next;
+    }
+    
+    
   protected:
     IDistortion() = default;
 
+    /// Send to the next one -- Distort
+    geo::Point_t CallNextDistort(geo::Point_t const& point) const {
+      return (
+        (m_next_distortion == nullptr) ?
+        point : m_next_distortion->Distort(point)
+      );
+    }
+
+    /// Send to the next one -- Correct
+    geo::Point_t CallNextCorrect(geo::Point_t const& point) const {
+      return (
+        (m_next_distortion == nullptr) ?
+        point : m_next_distortion->Correct(point)
+      );
+    }
+
+    /// Next link in chain
+    const IDistortion * m_next_distortion = nullptr;
+    
   }; // class IDistortion
 } // namespace detinfo
 
